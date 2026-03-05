@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OM-8 Technical Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0e14;
+    --paper: #f5f2eb;
+    --accent: #c0392b;
+    --accent2: #2c3e50;
+    --rule: #bbb4a0;
+    --muted: #7a7060;
+    --highlight: #e8e2d5;
+    --mono: 'Share Tech Mono', monospace;
+    --sans: 'Noto Sans JP', sans-serif;
+    --display: 'Rajdhani', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #d8d0c0;
+    font-family: var(--sans);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0,0,0,0.04) 28px);
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 4px 4px 0 #a09880, 8px 8px 0 #887e6e, 0 0 60px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Corner marks */
+  .page::before, .page::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: var(--accent);
+    border-style: solid;
+    z-index: 10;
+  }
+  .page::before { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+  .page::after  { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+  /* ── HEADER ── */
+  .doc-header {
+    padding: 48px 56px 32px;
+    border-bottom: 3px solid var(--ink);
+    position: relative;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .doc-id {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    line-height: 1.8;
+  }
+
+  .classification {
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+
+  .model-name {
+    font-family: var(--display);
+    font-size: 88px;
+    font-weight: 700;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    position: relative;
+    display: inline-block;
+  }
+
+  .model-name .dash {
+    color: var(--accent);
+  }
+
+  .model-sub {
+    margin-top: 12px;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .header-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .header-rule span {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .rule-line { flex: 1; height: 1px; background: var(--rule); }
+
+  /* ── CONTENT ── */
+  .doc-body {
+    padding: 0 56px 56px;
+  }
+
+  /* Section */
+  .section {
+    margin-top: 44px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.10s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.20s; }
+  .section:nth-child(6) { animation-delay: 0.25s; }
+  .section:nth-child(7) { animation-delay: 0.30s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    min-width: 28px;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* Spec table */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .spec-table tr {
+    border-bottom: 1px solid var(--highlight);
+  }
+
+  .spec-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .spec-table td {
+    padding: 11px 8px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .spec-table td:first-child {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    width: 200px;
+    padding-right: 20px;
+    white-space: nowrap;
+  }
+
+  .spec-table td:nth-child(2) {
+    font-weight: 500;
+    color: var(--ink);
+    border-left: 2px solid var(--rule);
+    padding-left: 20px;
+  }
+
+  .spec-table .highlight-row td:nth-child(2) {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .spec-table .sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  /* Overview grid */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .overview-cell {
+    background: var(--paper);
+    padding: 16px 20px;
+  }
+
+  .overview-cell .label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .overview-cell .value {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+
+  .overview-cell .value .unit {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+
+  /* Chip / badge */
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border: 1px solid currentColor;
+    margin-right: 4px;
+    margin-top: 3px;
+    vertical-align: middle;
+  }
+
+  .chip.red { color: var(--accent); }
+  .chip.dark { color: var(--accent2); }
+
+  /* Prose */
+  .prose {
+    font-size: 13px;
+    line-height: 1.85;
+    color: #2a2520;
+  }
+
+  .prose p + p { margin-top: 10px; }
+
+  /* Diagram box */
+  .diagram {
+    background: var(--highlight);
+    border: 1px solid var(--rule);
+    padding: 24px;
+    margin: 20px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--accent2);
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .diagram::before {
+    content: 'BLOCK DIAGRAM';
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  /* List */
+  .spec-list {
+    list-style: none;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .spec-list li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    border-bottom: 1px dotted var(--rule);
+  }
+
+  .spec-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+    top: 7px;
+  }
+
+  .spec-list li:last-child { border-bottom: none; }
+
+  /* Note box */
+  .note-box {
+    border-left: 3px solid var(--accent2);
+    padding: 12px 16px;
+    background: var(--highlight);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+
+  .note-box strong {
+    color: var(--accent2);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    margin-top: 60px;
+    padding: 20px 56px 36px;
+    border-top: 3px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .footer-right {
+    text-align: right;
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+
+  .footer-logo {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-logo .dash { color: var(--accent); }
+
+  /* Revision table */
+  .rev-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    font-family: var(--mono);
+    margin-top: 12px;
+  }
+  .rev-table th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6px 10px;
+    text-align: left;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+  }
+  .rev-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  .rev-table tr:last-child td { border-bottom: none; }
+  .rev-table tr:nth-child(even) td { background: var(--highlight); }
+
+  /* Watermark stripe */
+  .stripe-accent {
+    height: 4px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--accent) 0, var(--accent) 20px,
+      transparent 20px, transparent 24px
+    );
+    margin-bottom: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="stripe-accent"></div>
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="header-top">
+      <div class="doc-id">
+        DOC NO. OM-8/SPEC/REV-1.0<br>
+        ISSUED: 2025-01-15<br>
+        PAGES: 1 OF 1
+      </div>
+      <div class="classification">Technical Specification</div>
+    </div>
+
+    <div class="model-name">OM<span class="dash">-</span>8</div>
+    <div class="model-sub">8-Bit Personal Computing System</div>
+
+    <div class="header-rule">
+      <div class="rule-line"></div>
+      <span>HARDWARE ARCHITECTURE &amp; INTERFACE SPECIFICATION</span>
+      <div class="rule-line"></div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="doc-body">
+
+    <!-- 1. Overview -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <span class="section-title">System Overview</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-cell">
+          <div class="label">Architecture</div>
+          <div class="value">8<span class="unit">bit</span></div>
+        </div>
+        <div class="overview-cell">
+          <div class="label">CPU Family</div>
+          <div class="value">Z80</div>
+        </div>
+        <div class="overview-cell">
+          <div class="label">Boot Medium</div>
+          <div class="value">ROM</div>
+        </div>
+        <div class="overview-cell">
+          <div class="label">Input Device</div>
+          <div class="value">Keyboard</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p>
+          OM-8 は Z80 プロセッサを核とする 8 ビット・パーソナルコンピューティングシステムである。
+          ビルドインのビットマップフォントを用いたテキスト出力機構、キーボード入力、および ROM ブートに対応し、
+          汎用的かつ本格的なコンピューティング用途への展開を目的として設計された。
+        </p>
+        <p>
+          本仕様書はハードウェア構成、メモリマップ、入出力インタフェース、および起動シーケンスについて定義する。
+        </p>
+      </div>
+    </div>
+
+    <!-- 2. CPU -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <span class="section-title">Central Processing Unit</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="spec-table">
+        <tr class="highlight-row">
+          <td>PROCESSOR</td>
+          <td>Zilog Z80 / 互換品</td>
+        </tr>
+        <tr>
+          <td>ARCHITECTURE</td>
+          <td>8-bit / 16-bit アドレス空間</td>
+        </tr>
+        <tr>
+          <td>CLOCK FREQUENCY</td>
+          <td>最大 10 MHz（設計値）
+            <div class="sub">実装クロックソースに依存。クリスタル発振器を推奨。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>REGISTERS</td>
+          <td>A, B, C, D, E, H, L, F, IX, IY, SP, PC, 予備セット</td>
+        </tr>
+        <tr>
+          <td>ADDRESS BUS</td>
+          <td>16-bit（アドレス空間 64 KB）</td>
+        </tr>
+        <tr>
+          <td>DATA BUS</td>
+          <td>8-bit</td>
+        </tr>
+        <tr>
+          <td>INSTRUCTION SET</td>
+          <td>Z80 ネイティブ命令セット（拡張プレフィックス CB / DD / ED / FD 含む）</td>
+        </tr>
+        <tr>
+          <td>INTERRUPT</td>
+          <td>INT / NMI（モード 0 / 1 / 2 対応）</td>
+        </tr>
+        <tr>
+          <td>I/O SPACE</td>
+          <td>256 ポート（IN / OUT 命令）</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 3. Memory Map -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <span class="section-title">Memory Map</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="spec-table">
+        <tr>
+          <td>0x0000 – 0x3FFF</td>
+          <td><span class="chip red">ROM</span> ブート ROM（16 KB）
+            <div class="sub">電源投入後、Z80 は 0x0000 番地から実行開始。ROM に格納されたファームウェアを読み込む。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>0x4000 – 0x7FFF</td>
+          <td><span class="chip dark">VRAM</span> テキストビデオRAM（16 KB）
+            <div class="sub">文字コードおよびビットマップフォントデータを格納。ディスプレイコントローラが参照する。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>0x8000 – 0xFFFF</td>
+          <td><span class="chip dark">RAM</span> 汎用ワークRAM（32 KB）
+            <div class="sub">スタック、変数、プログラム展開領域として使用。</div>
+          </td>
+        </tr>
+      </table>
+
+      <div class="diagram">
+┌─────────────────────────────────────────────────────┐
+│  ADDRESS SPACE  (64 KB / 16-bit)                    │
+├──────────┬────────────────────────────────────────  │
+│ 0x0000   │  ██████████  ROM  (16 KB)   Boot / FW   │
+│ 0x4000   │  ▒▒▒▒▒▒▒▒▒▒  VRAM (16 KB)  Text Buffer  │
+│ 0x8000   │  ░░░░░░░░░░  RAM  (32 KB)  Work Area    │
+│ 0xFFFF   │                                          │
+└──────────┴────────────────────────────────────────  │
+</div>
+    </div>
+
+    <!-- 4. Display -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <span class="section-title">Display &amp; Graphics</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="spec-table">
+        <tr>
+          <td>OUTPUT TYPE</td>
+          <td>テキスト出力（ビットマップフォント描画）</td>
+        </tr>
+        <tr>
+          <td>DISPLAY RESOLUTION</td>
+          <td>640 × 400 ピクセル（推奨）
+            <div class="sub">実装ディスプレイコントローラに準じる。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>TEXT MODE</td>
+          <td>80 列 × 25 行</td>
+        </tr>
+        <tr>
+          <td>FONT</td>
+          <td>ビルドイン 8×16 ビットマップフォント（ROM 内蔵）
+            <div class="sub">ASCII (0x20–0x7E) + 拡張文字対応。フォントデータは ROM の固定アドレスに配置。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>COLOR</td>
+          <td>モノクロ（前景 / 背景 2 色）
+            <div class="sub">オプションで 4 色パレット拡張可能（実装依存）。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>CURSOR</td>
+          <td>ソフトウェアカーソル（ブロック / アンダーライン 切替）</td>
+        </tr>
+        <tr>
+          <td>REFRESH RATE</td>
+          <td>60 Hz（VSYNC 割込みにより Z80 に通知）</td>
+        </tr>
+        <tr>
+          <td>SCROLL</td>
+          <td>ハードウェアスクロールまたはソフトウェア VRAM コピー</td>
+        </tr>
+        <tr>
+          <td>VRAM ACCESS</td>
+          <td>CPU による直接書き込み（0x4000 番地以降）</td>
+        </tr>
+      </table>
+
+      <div class="note-box">
+        <strong>NOTE — GRAPHICS SCOPE</strong>
+        本システムのグラフィックス機能はテキスト出力に特化しており、スプライトや任意ピクセル描画機能は提供しない。
+        高度なグラフィックス用途が必要な場合は拡張ボードの使用を検討すること。
+      </div>
+    </div>
+
+    <!-- 5. Input -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <span class="section-title">Keyboard Input</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="spec-table">
+        <tr>
+          <td>INTERFACE</td>
+          <td>PS/2 または 独自マトリクスキーボード（実装依存）</td>
+        </tr>
+        <tr>
+          <td>CONTROLLER</td>
+          <td>専用キーボードコントローラ IC（I/O ポート経由で Z80 と通信）</td>
+        </tr>
+        <tr>
+          <td>I/O PORT</td>
+          <td>ポート 0x00（ステータス）/ 0x01（データ）</td>
+        </tr>
+        <tr>
+          <td>SCAN CODE</td>
+          <td>1 バイトスキャンコード方式
+            <div class="sub">キー押下・リリースを区別。修飾キー（Shift / Ctrl / Alt）対応。</div>
+          </td>
+        </tr>
+        <tr>
+          <td>BUFFER</td>
+          <td>16 バイト FIFO ソフトウェアキーバッファ（ROM ファームウェア管理）</td>
+        </tr>
+        <tr>
+          <td>INTERRUPT</td>
+          <td>INT ライン接続。キー入力時に Z80 割込みを発生させる方式を標準とする。</td>
+        </tr>
+        <tr>
+          <td>POLLING</td>
+          <td>割込み非使用時はポーリングによるアクセスも可能。</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 6. Boot -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <span class="section-title">Boot Sequence</span>
+        <div class="section-line"></div>
+      </div>
+
+      <ul class="spec-list">
+        <li><strong>POWER ON</strong> — リセット信号がアサートされ、Z80 の PC が 0x0000 に初期化される。</li>
+        <li><strong>ROM FETCH</strong> — 0x0000 番地の ROM ファームウェアが実行開始。スタックポインタ・レジスタを初期化。</li>
+        <li><strong>HARDWARE INIT</strong> — VRAM クリア、ディスプレイコントローラ初期化、キーボードコントローラリセットを順次実行。</li>
+        <li><strong>SELF TEST</strong> — RAM 書き込み・読み出し検査（0x8000–0xFFFF 領域）。エラー検出時は VRAM にエラーコードを表示して停止。</li>
+        <li><strong>FONT LOAD</strong> — ROM 内蔵ビットマップフォントをフォントテーブルとして参照可能な状態にセット。</li>
+        <li><strong>FIRMWARE LAUNCH</strong> — メインインタプリタ / モニタプログラムへジャンプ。コマンドプロンプトを表示し、ユーザー入力待ち状態に遷移。</li>
+      </ul>
+
+      <div class="diagram">
+RESET ──► [Z80 PC=0x0000] ──► ROM FIRMWARE
+                                    │
+                    ┌───────────────┼───────────────┐
+                    ▼               ▼               ▼
+              Stack Init      VRAM Clear      KBD Reset
+                    │               │               │
+                    └───────────────┴───────────────┘
+                                    │
+                              RAM Self Test
+                              PASS │   FAIL ──► Error Halt
+                                   ▼
+                            Font Table Setup
+                                   │
+                                   ▼
+                         Monitor / Interpreter
+                         "OM-8 READY>" Prompt
+</div>
+    </div>
+
+    <!-- 7. Audio -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <span class="section-title">Audio</span>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="prose">
+        <p>
+          OM-8 は音声出力機能を搭載しない。オーディオ回路、サウンドチップ、およびスピーカー出力は
+          本リビジョンの設計スコープに含まれていない。
+        </p>
+        <p>
+          将来の拡張ボードによって音声出力機能を追加することは妨げないが、
+          本体回路基板にオーディオ関連の部品・端子は実装されない。
+        </p>
+      </div>
+
+      <div class="note-box">
+        <strong>DESIGN RATIONALE</strong>
+        音声機能の省略は、回路の簡素化・コスト低減・電磁ノイズ低減を目的とした設計判断である。
+        テキストベースのコンピューティングに特化した用途においては影響がないと判断した。
+      </div>
+    </div>
+
+    <!-- 8. Electrical -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">08</span>
+        <span class="section-title">Electrical &amp; Physical</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="spec-table">
+        <tr>
+          <td>SUPPLY VOLTAGE</td>
+          <td>+5 V DC（±5%）</td>
+        </tr>
+        <tr>
+          <td>TYPICAL CURRENT</td>
+          <td>300–500 mA（実装依存）</td>
+        </tr>
+        <tr>
+          <td>LOGIC LEVEL</td>
+          <td>TTL / CMOS 互換（3.3 V 対応品は変換レベルシフタを要する）</td>
+        </tr>
+        <tr>
+          <td>BUS EXPANSION</td>
+          <td>Z80 バスを外部コネクタに引き出し（アドレス / データ / 制御信号）</td>
+        </tr>
+        <tr>
+          <td>FORM FACTOR</td>
+          <td>カスタム PCB（寸法は実装設計に依存）</td>
+        </tr>
+        <tr>
+          <td>OPERATING TEMP</td>
+          <td>0 °C – 50 °C</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- 9. Revision History -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-num">09</span>
+        <span class="section-title">Revision History</span>
+        <div class="section-line"></div>
+      </div>
+
+      <table class="rev-table">
+        <thead>
+          <tr>
+            <th>REV</th>
+            <th>DATE</th>
+            <th>AUTHOR</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.0</td>
+            <td>2025-01-15</td>
+            <td>OM Engineering</td>
+            <td>Initial release — full hardware specification</td>
+          </tr>
+          <tr>
+            <td>0.9</td>
+            <td>2024-11-20</td>
+            <td>OM Engineering</td>
+            <td>Draft — memory map and display section updated</td>
+          </tr>
+          <tr>
+            <td>0.5</td>
+            <td>2024-09-01</td>
+            <td>OM Engineering</td>
+            <td>Preliminary draft for internal review</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /doc-body -->
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <div class="footer-left">
+      DOCUMENT: OM-8/SPEC/REV-1.0<br>
+      STATUS: RELEASED<br>
+      © OM Engineering. All rights reserved.
+    </div>
+    <div class="footer-right">
+      <div class="footer-logo">OM<span class="dash">-</span>8</div>
+      Technical Specification<br>
+      REV 1.0 / 2025-01-15
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
